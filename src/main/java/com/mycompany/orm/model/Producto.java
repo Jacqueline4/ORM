@@ -49,7 +49,7 @@ public class Producto {//SIEMPRE TIENE QUE TENER UN ID
 
     @Override
     public String toString() {
-        return "Compra{" + "id=" + id + ", quantity=" + quantity + ", product=" + productName + '}';
+        return "id: " + id + ", quantity: " + quantity + ", product: " + productName;
     }
 
     public String getProductName() {

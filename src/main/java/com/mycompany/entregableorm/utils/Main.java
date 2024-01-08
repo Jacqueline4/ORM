@@ -51,8 +51,8 @@ public class Main {
         }
 
         do {
-            opcion=mostrarMenu(sc);
-          
+            opcion = mostrarMenu(sc);
+
             sc.nextLine();
             switch (opcion) {
                 case "listar":
@@ -69,7 +69,7 @@ public class Main {
                     break;
                 case "salir":
                     System.out.println("Saliendo del programa");
-                    HibernateUtil.shutdown(); 
+                    HibernateUtil.shutdown();
                     System.exit(0);
                     break;
                 default:
@@ -87,7 +87,7 @@ public class Main {
     }
 
     public static void usarSuministro(Scanner sc, ProductoPojo pp) {
-        
+
         System.out.print("Nombre del producto a buscar: ");
         String nombreSuministro = sc.nextLine();
         for (Producto producto : pp.getProductByName(nombreSuministro)) {
@@ -97,61 +97,73 @@ public class Main {
         String nombreSuministroE = sc.nextLine();
         System.out.print("Ingrese la cantidad a usar: ");
         int cantidadAUsar = sc.nextInt();
-        int cantidadNueva;
-        for (Producto producto : pp.getProductsByNameWithHQL(nombreSuministroE)) {
-            System.out.println(producto);
-            if(cantidadAUsar>producto.getQuantity()){
-                System.out.println("No hay suficiente cantidad, solo quedan "+ producto.getQuantity()+" "+ nombreSuministroE);
-            }else if(cantidadAUsar==producto.getQuantity()){
-                pp.deleteProduct(producto);
-            }else{
-                cantidadNueva = producto.getQuantity() - cantidadAUsar;
-                producto.setQuantity(cantidadNueva);
-                pp.updateProducto(producto);
-                System.out.println("nuevo: " + producto);
+        if (cantidadAUsar > 0) {
+            int cantidadNueva;
+            for (Producto producto : pp.getProductsByNameWithHQL(nombreSuministroE)) {
+                System.out.println(producto);
+                if (cantidadAUsar > producto.getQuantity()) {
+                    System.out.println("No hay suficiente cantidad, solo quedan " + producto.getQuantity() + " " + nombreSuministroE);
+                } else if (cantidadAUsar == producto.getQuantity()) {
+                    pp.deleteProduct(producto);
+                } else {
+                    cantidadNueva = producto.getQuantity() - cantidadAUsar;
+                    producto.setQuantity(cantidadNueva);
+                    pp.updateProducto(producto);
+                    System.out.println("nuevo: " + producto);
+                }
             }
+        } else {
+            System.out.println("Tienes que introducir un numero positivo");
         }
 
     }
 
     public static void haySuministro(Scanner sc, ProductoPojo pp) {
-      
+
         System.out.print("Nombre del producto: ");
         String nombreSuministro = sc.nextLine();
-        for (Producto producto : pp.getProductByName(nombreSuministro)) {
+        if (pp.getProductByName(nombreSuministro).isEmpty()) {
+            System.out.println("No hay de ese producto");
+        } else {
 
-            System.out.println(producto);
+            for (Producto producto : pp.getProductByName(nombreSuministro)) {
+
+                System.out.println(producto);
+            }
         }
-
     }
 
     public static void adquirirSuministro(Scanner sc, ProductoPojo pp, List<Producto> alProdBBDD) {
-     
+
         System.out.print("Nombre del producto: ");
         String nombreAdquirir = sc.nextLine();
         System.out.print("Ingrese la cantidad a adquirir: ");
         int cantidadAdquirir = sc.nextInt();
 
-        Producto adquisicion = new Producto();
-        adquisicion.setProductName(nombreAdquirir);
-        adquisicion.setQuantity(cantidadAdquirir);
-        alProdBBDD = pp.getProductsByNameWithHQL(adquisicion.getProductName());
-        if (alProdBBDD != null) {
-            if (!alProdBBDD.isEmpty()) {
-                adquisicion = alProdBBDD.get(0);
-                adquisicion.setQuantity(adquisicion.getQuantity() + cantidadAdquirir);
-                pp.updateProducto(adquisicion);
+        if (cantidadAdquirir>0) {
+            Producto adquisicion = new Producto();
+            adquisicion.setProductName(nombreAdquirir);
+            adquisicion.setQuantity(cantidadAdquirir);
+            alProdBBDD = pp.getProductsByNameWithHQL(adquisicion.getProductName());
+            if (alProdBBDD != null) {
+                if (!alProdBBDD.isEmpty()) {
+                    adquisicion = alProdBBDD.get(0);
+                    adquisicion.setQuantity(adquisicion.getQuantity() + cantidadAdquirir);
+                    pp.updateProducto(adquisicion);
 
-            } else {
-                pp.addProduct(adquisicion);
+                } else {
+                    pp.addProduct(adquisicion);
 
+                }
             }
-        }
-         for (Producto producto : pp.getProductsByNameWithHQL(adquisicion.getProductName())) {
+            for (Producto producto : pp.getProductsByNameWithHQL(adquisicion.getProductName())) {
 
-            System.out.println(producto);
+                System.out.println(producto);
+            }
+        } else{
+            System.out.println("Por favor introduzca una cantidad positiva");
         }
-        
+
     }
 
     public static String mostrarMenu(Scanner sc) {

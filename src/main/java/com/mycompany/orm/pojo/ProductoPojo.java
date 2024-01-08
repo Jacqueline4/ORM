@@ -81,7 +81,7 @@ public class ProductoPojo implements ProductoDAO {
     public List<Producto> getProductByName(String name) {
         try (Session session = HibernateUtil.getFactory().openSession()) {//:value no hace falta que sea value, puede ser lo que sea siempre que sea unico (no se puede repetir) ya que ese value se reemplaza por el nombre
             Query<Producto> query = session.createQuery("FROM Producto where productName like :valueName ", Producto.class); // productName y no nombre Producto ya que tiene que ser el nombre del atibuto de la clase Producto
-            query.setParameter("valueName", name + "%");//aqui se sustituye ese lo que esta despues de : por nombre;
+            query.setParameter("valueName","%"+ name + "%");//aqui se sustituye ese lo que esta despues de : por nombre;
             return query.getResultList();// hace lo mismo query.list()
         } catch (Exception e) {
             System.err.println(e);
